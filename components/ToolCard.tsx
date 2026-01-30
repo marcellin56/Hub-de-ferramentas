@@ -5,17 +5,27 @@ import { getMicrolinkUrl } from '../utils';
 
 interface ToolCardProps {
   tool: Tool;
-  onOpen: (tool: Tool) => void;
+  onOpen: (tool: Tool, rect?: DOMRect) => void;
   onEdit: (tool: Tool) => void;
   onDelete: (id: string) => void;
 }
 
 export const ToolCard: React.FC<ToolCardProps> = ({ tool, onOpen, onEdit, onDelete }) => {
+  
+  const handleOpenClick = (e: React.MouseEvent) => {
+    // Captura as coordenadas do elemento clicado (o container da imagem)
+    const rect = e.currentTarget.getBoundingClientRect();
+    onOpen(tool, rect);
+  };
+
   return (
     <div className="group relative bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700/50 shadow-soft-glow hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
       
       {/* Visual Preview */}
-      <div className="relative h-40 w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-900 mb-4 cursor-pointer" onClick={() => onOpen(tool)}>
+      <div 
+        className="relative h-40 w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-900 mb-4 cursor-pointer" 
+        onClick={handleOpenClick}
+      >
         <img 
           src={getMicrolinkUrl(tool.url)} 
           alt={`${tool.name} preview`}

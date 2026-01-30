@@ -69,6 +69,33 @@
       .dark ::-webkit-scrollbar-thumb {
         background: #475569;
       }
+
+      /* Animations for Workspace Expansion */
+      @keyframes expandWorkspace {
+        0% {
+          opacity: 0;
+          transform: scale(0.5); /* Starts smaller to simulate growing from card */
+          border-radius: 100px;
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+          border-radius: 0px;
+        }
+      }
+
+      @keyframes collapseWorkspace {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+          border-radius: 0px;
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.5);
+          border-radius: 100px;
+        }
+      }
     </style>
   <script type="importmap">
 {

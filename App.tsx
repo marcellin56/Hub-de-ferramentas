@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, Moon, Sun, LayoutGrid } from 'lucide-react';
-import { Category, Tool, ViewMode } from './types';
+import { Plus, Search, Moon, Sun, LayoutGrid, HelpCircle } from 'lucide-react';
+import { Category, Tool } from './types';
 import { ToolCard } from './components/ToolCard';
 import { Workspace } from './components/Workspace';
 import { Modal } from './components/Modal';
 import { AddToolForm } from './components/AddToolForm';
 import { Button } from './components/Button';
+import { Rafaelzinho } from './components/Rafaelzinho';
 import { DEFAULT_TOOLS } from './constants';
 
 function App() {
@@ -14,12 +15,17 @@ function App() {
     const saved = localStorage.getItem('dashboard-tools');
     return saved ? JSON.parse(saved) : DEFAULT_TOOLS;
   });
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [activeTool, setActiveTool] = useState<Tool | null>(null);
+  
+  // Animation State
+  const [isClosing, setIsClosing] = useState(false);
+  const [animOrigin, setAnimOrigin] = useState<string>('center center');
+
   const [selectedCategory, setSelectedCategory] = useState<Category>('Todas');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTool, setEditingTool] = useState<Tool | null>(null);
+  const [showGuide, setShowGuide] = useState(true);
   
   // Theme Management
   const [isDark, setIsDark] = useState(() => {
@@ -68,14 +74,27 @@ function App() {
     setIsModalOpen(true);
   };
 
-  const handleOpenWorkspace = (tool: Tool) => {
+  const handleOpenWorkspace = (tool: Tool, rect?: DOMRect) => {
+    if (rect) {
+      // Calcula o centro do elemento clicado para ser a origem da animação
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      setAnimOrigin(`${x}px ${y}px`);
+    } else {
+      setAnimOrigin('center center');
+    }
+
+    setIsClosing(false);
     setActiveTool(tool);
-    setViewMode('workspace');
   };
 
   const handleCloseWorkspace = () => {
-    setViewMode('grid');
-    setActiveTool(null);
+    setIsClosing(true);
+    // Wait for animation to finish before removing from DOM
+    setTimeout(() => {
+      setActiveTool(null);
+      setIsClosing(false);
+    }, 400); // Matches animation duration
   };
 
   // Filter Logic
@@ -90,14 +109,8 @@ function App() {
 
   const categories: Category[] = ['Todas', 'Produtividade', 'Marketing', 'Dev', 'Design', 'Finanças'];
 
-  // View: Workspace
-  if (viewMode === 'workspace' && activeTool) {
-    return <Workspace tool={activeTool} onBack={handleCloseWorkspace} />;
-  }
-
-  // View: Grid (Main Dashboard)
   return (
-    <div className="min-h-screen pb-20 px-4 md:px-8 max-w-[1600px] mx-auto">
+    <div className="min-h-screen pb-20 px-4 md:px-8 max-w-[1600px] mx-auto relative">
       
       {/* Floating Header */}
       <header className="sticky top-6 z-40 mx-4 md:mx-6">
@@ -113,8 +126,8 @@ function App() {
                 </span>
             </div>
 
-            {/* Center Navigation Pills */}
-            <nav className="flex items-center overflow-x-auto pb-2 md:pb-0 hide-scrollbar gap-2">
+            {/* Center Navigation Pills - TOUR ID ADDED */}
+            <nav id="tour-categories" className="flex items-center overflow-x-auto pb-2 md:pb-0 hide-scrollbar gap-2 transition-all duration-300">
                 <div className="flex p-1.5 bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
                 {categories.map((cat) => (
                     <button
@@ -132,8 +145,8 @@ function App() {
                 </div>
             </nav>
 
-            {/* Right Actions */}
-            <div className="flex items-center gap-3">
+            {/* Right Actions - TOUR ID ADDED */}
+            <div id="tour-actions" className="flex items-center gap-3 transition-all duration-300">
                 {/* Search Bar (Compact) */}
                 <div className="hidden lg:flex items-center bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-full border border-slate-200 dark:border-slate-700 focus-within:ring-2 focus-within:ring-primary transition-shadow">
                     <Search size={18} className="text-slate-400" />
@@ -145,6 +158,15 @@ function App() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
+                
+                {/* Help Button */}
+                <button
+                onClick={() => setShowGuide(true)}
+                className="p-2.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:text-primary dark:hover:text-primary transition-colors"
+                title="Ajuda do Rafaelzinho"
+                >
+                  <HelpCircle size={20} />
+                </button>
 
                 <button
                 onClick={() => setIsDark(!isDark)}
@@ -194,8 +216,8 @@ function App() {
         </div>
       </section>
 
-      {/* Grid Content */}
-      <main className="mt-6">
+      {/* Grid Content - TOUR ID ADDED */}
+      <main id="tour-grid" className="mt-6">
         {filteredTools.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
             {filteredTools.map((tool) => (
@@ -233,6 +255,25 @@ function App() {
           initialData={editingTool}
         />
       </Modal>
+
+      {/* EXPANDING WORKSPACE OVERLAY */}
+      {activeTool && (
+        <div 
+          style={{ transformOrigin: animOrigin }}
+          className={`fixed inset-0 z-50 flex flex-col bg-slate-50 dark:bg-slate-900 shadow-2xl overflow-hidden ${
+            isClosing 
+              ? 'animate-[collapseWorkspace_0.4s_cubic-bezier(0.16,1,0.3,1)_forwards]' 
+              : 'animate-[expandWorkspace_0.45s_cubic-bezier(0.16,1,0.3,1)_forwards]'
+          }`}
+        >
+          <Workspace tool={activeTool} onBack={handleCloseWorkspace} />
+        </div>
+      )}
+
+      {/* Assistente Rafaelzinho */}
+      {showGuide && !activeTool && !isModalOpen && (
+        <Rafaelzinho onClose={() => setShowGuide(false)} />
+      )}
 
     </div>
   );
