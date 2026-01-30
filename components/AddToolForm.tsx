@@ -70,7 +70,7 @@ export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initi
           onChange={(e) => setUrl(e.target.value)}
           onBlur={handleUrlBlur}
           placeholder="https://exemplo.com"
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all"
         />
       </div>
 
@@ -85,7 +85,7 @@ export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initi
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="ex: Figma"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all"
           />
         </div>
         <div className="col-span-1">
@@ -114,7 +114,7 @@ export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initi
               onClick={() => setCategory(cat)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 category === cat 
-                  ? 'bg-indigo-600 text-white shadow-md' 
+                  ? 'bg-primary text-white shadow-md' 
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
@@ -132,7 +132,7 @@ export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initi
            value={description}
            onChange={(e) => setDescription(e.target.value)}
            placeholder="Breve descrição do que esta ferramenta faz..."
-           className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-20 resize-none"
+           className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all h-20 resize-none"
         />
       </div>
 

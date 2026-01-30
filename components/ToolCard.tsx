@@ -46,7 +46,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onOpen, onEdit, onDele
             <h3 className="font-display font-bold text-slate-800 dark:text-slate-100 text-lg leading-tight truncate max-w-[150px]">
               {tool.name}
             </h3>
-            <span className="text-xs font-medium text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full mt-1 inline-block">
+            <span className="text-xs font-medium text-primary-600 bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded-full mt-1 inline-block">
               {tool.category}
             </span>
           </div>
@@ -62,7 +62,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onOpen, onEdit, onDele
         <div className="flex gap-1">
            <button 
             onClick={() => onEdit(tool)}
-            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-full transition-colors"
+            className="p-2 text-slate-400 hover:text-primary hover:bg-primary-50 dark:hover:bg-slate-700 rounded-full transition-colors"
             title="Editar"
           >
             <Edit2 size={16} />
@@ -78,7 +78,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onOpen, onEdit, onDele
 
         <button 
           onClick={() => window.open(tool.url, '_blank')}
-          className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400 transition-colors"
         >
           Nova Aba <ExternalLink size={14} />
         </button>

@@ -99,87 +99,100 @@ function App() {
   return (
     <div className="min-h-screen pb-20 px-4 md:px-8 max-w-[1600px] mx-auto">
       
-      {/* Header */}
-      <header className="py-8 sticky top-0 z-40">
-        {/* Blur backdrop for sticky header */}
-        <div className="absolute inset-0 -mx-8 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-white/20 dark:border-slate-800/50 -z-10" />
-        
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-              <LayoutGrid size={20} />
+      {/* Floating Header */}
+      <header className="sticky top-6 z-40 mx-4 md:mx-6">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-4 px-6 transition-all duration-300">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
+                <LayoutGrid size={20} />
+                </div>
+                <span className="font-display font-bold text-2xl tracking-tight text-slate-900 dark:text-white">
+                Dashboard<span className="text-primary">Hub</span>
+                </span>
             </div>
-            <span className="font-display font-bold text-2xl tracking-tight text-slate-900 dark:text-white">
-              Dashboard<span className="text-indigo-600">Hub</span>
-            </span>
-          </div>
 
-          {/* Center Navigation Pills */}
-          <nav className="flex items-center overflow-x-auto pb-2 md:pb-0 hide-scrollbar gap-2">
-            <div className="flex p-1.5 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
-              {categories.map((cat) => (
+            {/* Center Navigation Pills */}
+            <nav className="flex items-center overflow-x-auto pb-2 md:pb-0 hide-scrollbar gap-2">
+                <div className="flex p-1.5 bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+                {categories.map((cat) => (
+                    <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                        selectedCategory === cat
+                        ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-md transform scale-105'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    }`}
+                    >
+                    {cat}
+                    </button>
+                ))}
+                </div>
+            </nav>
+
+            {/* Right Actions */}
+            <div className="flex items-center gap-3">
+                {/* Search Bar (Compact) */}
+                <div className="hidden lg:flex items-center bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-full border border-slate-200 dark:border-slate-700 focus-within:ring-2 focus-within:ring-primary transition-shadow">
+                    <Search size={18} className="text-slate-400" />
+                    <input 
+                    type="text" 
+                    placeholder="Buscar..." 
+                    className="bg-transparent border-none outline-none text-sm ml-2 w-32 text-slate-700 dark:text-slate-200 placeholder-slate-400"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+
                 <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                    selectedCategory === cat
-                      ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-md transform scale-105'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-                  }`}
+                onClick={() => setIsDark(!isDark)}
+                className="p-2.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                 >
-                  {cat}
+                {isDark ? <Sun size={20} /> : <Moon size={20} />}
                 </button>
-              ))}
+
+                <Button 
+                onClick={() => {
+                    setEditingTool(null);
+                    setIsModalOpen(true);
+                }}
+                icon={<Plus size={18} />}
+                className="shadow-xl shadow-primary/20"
+                >
+                Adicionar
+                </Button>
             </div>
-          </nav>
+            </div>
 
-          {/* Right Actions */}
-          <div className="flex items-center gap-3">
-             {/* Search Bar (Compact) */}
-             <div className="hidden lg:flex items-center bg-white dark:bg-slate-800 px-3 py-2 rounded-full border border-slate-200 dark:border-slate-700 focus-within:ring-2 focus-within:ring-indigo-500 transition-shadow">
-                <Search size={18} className="text-slate-400" />
-                <input 
-                  type="text" 
-                  placeholder="Buscar..." 
-                  className="bg-transparent border-none outline-none text-sm ml-2 w-32 text-slate-700 dark:text-slate-200 placeholder-slate-400"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+            {/* Mobile Search Bar (Below header on small screens) */}
+            <div className="mt-4 lg:hidden relative border-t border-slate-200 dark:border-slate-700 pt-4">
+            <Search size={18} className="absolute left-3 top-[1.65rem] -translate-y-1/2 text-slate-400" />
+            <input 
+                type="text" 
+                placeholder="Pesquise suas ferramentas..." 
+                className="w-full bg-slate-50 dark:bg-slate-800/50 backdrop-blur px-10 py-3 rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-primary transition-all"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 />
-             </div>
-
-            <button
-              onClick={() => setIsDark(!isDark)}
-              className="p-2.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            <Button 
-              onClick={() => {
-                setEditingTool(null);
-                setIsModalOpen(true);
-              }}
-              icon={<Plus size={18} />}
-              className="shadow-xl shadow-indigo-500/20"
-            >
-              Adicionar
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Search Bar (Below header on small screens) */}
-        <div className="mt-4 lg:hidden relative">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input 
-              type="text" 
-              placeholder="Pesquise suas ferramentas..." 
-              className="w-full bg-white/50 dark:bg-slate-800/50 backdrop-blur px-10 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            </div>
         </div>
       </header>
+
+      {/* Hero / Welcome Section */}
+      <section className="mt-16 md:mt-20 mb-12 flex flex-col items-center justify-center text-center px-4 animate-[fadeIn_0.5s_ease-out]">
+        <h1 className="text-2xl md:text-4xl font-display font-medium text-slate-700 dark:text-slate-300 mb-2">
+            Bem-vindo ao seu
+        </h1>
+        <div className="relative inline-block">
+            <h1 className="text-4xl md:text-6xl font-display font-black text-primary pb-2">
+                Painel de Ferramentas
+            </h1>
+            {/* Decorative underline/glow */}
+            <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0 blur-sm"></div>
+        </div>
+      </section>
 
       {/* Grid Content */}
       <main className="mt-6">
