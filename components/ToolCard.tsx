@@ -5,17 +5,15 @@ import { getMicrolinkUrl } from '../utils';
 
 interface ToolCardProps {
   tool: Tool;
-  onOpen: (tool: Tool, rect?: DOMRect) => void;
+  onOpen: (tool: Tool) => void;
   onEdit: (tool: Tool) => void;
   onDelete: (id: string) => void;
 }
 
 export const ToolCard: React.FC<ToolCardProps> = ({ tool, onOpen, onEdit, onDelete }) => {
   
-  const handleOpenClick = (e: React.MouseEvent) => {
-    // Captura as coordenadas do elemento clicado (o container da imagem)
-    const rect = e.currentTarget.getBoundingClientRect();
-    onOpen(tool, rect);
+  const handleOpenClick = () => {
+    onOpen(tool);
   };
 
   return (

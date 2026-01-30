@@ -19,7 +19,6 @@ function App() {
   
   // Animation State
   const [isClosing, setIsClosing] = useState(false);
-  const [animOrigin, setAnimOrigin] = useState<string>('center center');
 
   const [selectedCategory, setSelectedCategory] = useState<Category>('Todas');
   const [searchQuery, setSearchQuery] = useState('');
@@ -74,16 +73,7 @@ function App() {
     setIsModalOpen(true);
   };
 
-  const handleOpenWorkspace = (tool: Tool, rect?: DOMRect) => {
-    if (rect) {
-      // Calcula o centro do elemento clicado para ser a origem da animação
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height / 2;
-      setAnimOrigin(`${x}px ${y}px`);
-    } else {
-      setAnimOrigin('center center');
-    }
-
+  const handleOpenWorkspace = (tool: Tool) => {
     setIsClosing(false);
     setActiveTool(tool);
   };
@@ -94,7 +84,7 @@ function App() {
     setTimeout(() => {
       setActiveTool(null);
       setIsClosing(false);
-    }, 400); // Matches animation duration
+    }, 200); // Shorter duration for snappier feel
   };
 
   // Filter Logic
@@ -259,11 +249,10 @@ function App() {
       {/* EXPANDING WORKSPACE OVERLAY */}
       {activeTool && (
         <div 
-          style={{ transformOrigin: animOrigin }}
           className={`fixed inset-0 z-50 flex flex-col bg-slate-50 dark:bg-slate-900 shadow-2xl overflow-hidden ${
             isClosing 
-              ? 'animate-[collapseWorkspace_0.4s_cubic-bezier(0.16,1,0.3,1)_forwards]' 
-              : 'animate-[expandWorkspace_0.45s_cubic-bezier(0.16,1,0.3,1)_forwards]'
+              ? 'animate-[collapseWorkspace_0.2s_ease-in_forwards]' 
+              : 'animate-[expandWorkspace_0.25s_ease-out_forwards]'
           }`}
         >
           <Workspace tool={activeTool} onBack={handleCloseWorkspace} />

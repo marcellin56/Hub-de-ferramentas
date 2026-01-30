@@ -70,17 +70,15 @@
         background: #475569;
       }
 
-      /* Animations for Workspace Expansion */
+      /* Animations for Workspace Expansion - Optimized for Performance */
       @keyframes expandWorkspace {
         0% {
           opacity: 0;
-          transform: scale(0.5); /* Starts smaller to simulate growing from card */
-          border-radius: 100px;
+          transform: scale(0.96);
         }
         100% {
           opacity: 1;
           transform: scale(1);
-          border-radius: 0px;
         }
       }
 
@@ -88,12 +86,10 @@
         0% {
           opacity: 1;
           transform: scale(1);
-          border-radius: 0px;
         }
         100% {
           opacity: 0;
-          transform: scale(0.5);
-          border-radius: 100px;
+          transform: scale(0.96);
         }
       }
     </style>
