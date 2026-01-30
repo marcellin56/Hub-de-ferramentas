@@ -19,7 +19,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({ tool, onBack }) => {
       <header className="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 shadow-sm z-10">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={onBack} icon={<ArrowLeft size={18} />}>
-            Back
+            Voltar
           </Button>
           <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2" />
           <div className="flex items-center gap-3">
@@ -35,7 +35,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({ tool, onBack }) => {
 
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={reload} icon={<RefreshCw size={16} />}>
-             Reload
+             Recarregar
           </Button>
           <Button 
             variant="primary" 
@@ -43,7 +43,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({ tool, onBack }) => {
             onClick={() => window.open(tool.url, '_blank')}
             icon={<ExternalLink size={16} />}
           >
-            Open Original
+            Abrir Original
           </Button>
         </div>
       </header>
@@ -62,7 +62,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({ tool, onBack }) => {
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-0 pointer-events-none opacity-60">
            <div className="bg-slate-800/80 backdrop-blur text-white px-4 py-2 rounded-full text-xs flex items-center gap-2">
               <AlertTriangle size={12} className="text-yellow-400" />
-              <span>If content is blank, this site blocks embedding. Use "Open Original".</span>
+              <span>Se o conteúdo estiver em branco, o site bloqueia a incorporação. Use "Abrir Original".</span>
            </div>
         </div>
       </div>

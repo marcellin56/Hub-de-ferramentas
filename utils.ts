@@ -24,6 +24,6 @@ export const formatUrlToName = (url: string): string => {
     const name = hostname.replace('www.', '').split('.')[0];
     return name.charAt(0).toUpperCase() + name.slice(1);
   } catch {
-    return 'New Tool';
+    return 'Nova Ferramenta';
   }
 };

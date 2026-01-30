@@ -12,7 +12,7 @@ interface AddToolFormProps {
 export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initialData }) => {
   const [url, setUrl] = useState(initialData?.url || '');
   const [name, setName] = useState(initialData?.name || '');
-  const [category, setCategory] = useState<Category>(initialData?.category || 'Production');
+  const [category, setCategory] = useState<Category>(initialData?.category || 'Produtividade');
   const [emoji, setEmoji] = useState(initialData?.icon || '⚡️');
   const [description, setDescription] = useState(initialData?.description || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -55,13 +55,13 @@ export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initi
     }, 400);
   };
 
-  const categories: Category[] = ['Production', 'Marketing', 'Dev', 'Design', 'Finance'];
+  const categories: Category[] = ['Produtividade', 'Marketing', 'Dev', 'Design', 'Finanças'];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-          Tool URL
+          URL da Ferramenta
         </label>
         <input
           type="text"
@@ -69,7 +69,7 @@ export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initi
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           onBlur={handleUrlBlur}
-          placeholder="https://example.com"
+          placeholder="https://exemplo.com"
           className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
         />
       </div>
@@ -77,20 +77,20 @@ export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initi
       <div className="grid grid-cols-4 gap-4">
         <div className="col-span-3">
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-            Name
+            Nome
           </label>
           <input
             type="text"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Figma"
+            placeholder="ex: Figma"
             className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
           />
         </div>
         <div className="col-span-1">
              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-            Icon
+            Ícone
           </label>
           <input 
             type="text"
@@ -104,7 +104,7 @@ export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initi
 
       <div>
         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-          Category
+          Categoria
         </label>
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
@@ -126,22 +126,22 @@ export const AddToolForm: React.FC<AddToolFormProps> = ({ onAdd, onCancel, initi
       
       <div>
          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-          Description (Optional)
+          Descrição (Opcional)
         </label>
         <textarea
            value={description}
            onChange={(e) => setDescription(e.target.value)}
-           placeholder="Short description of what this tool does..."
+           placeholder="Breve descrição do que esta ferramenta faz..."
            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-20 resize-none"
         />
       </div>
 
       <div className="flex gap-3 pt-2">
         <Button type="button" variant="ghost" onClick={onCancel} className="flex-1">
-          Cancel
+          Cancelar
         </Button>
         <Button type="submit" variant="primary" disabled={isLoading} className="flex-1">
-          {isLoading ? 'Saving...' : (initialData ? 'Update Tool' : 'Add Tool')}
+          {isLoading ? 'Salvando...' : (initialData ? 'Atualizar' : 'Adicionar')}
         </Button>
       </div>
     </form>

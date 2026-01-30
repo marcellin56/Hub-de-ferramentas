@@ -27,7 +27,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onOpen, onEdit, onDele
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
              <span className="bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full font-medium text-sm flex items-center gap-2">
-                <Maximize2 size={16} /> Open Workspace
+                <Maximize2 size={16} /> Abrir Visualizador
              </span>
         </div>
       </div>
@@ -54,7 +54,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onOpen, onEdit, onDele
       </div>
 
       <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-6 flex-grow">
-        {tool.description || `Manage your ${tool.name} workflow directly from the dashboard.`}
+        {tool.description || `Gerencie seu fluxo de trabalho no ${tool.name} diretamente pelo painel.`}
       </p>
 
       {/* Actions */}
@@ -63,14 +63,14 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onOpen, onEdit, onDele
            <button 
             onClick={() => onEdit(tool)}
             className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-full transition-colors"
-            title="Edit"
+            title="Editar"
           >
             <Edit2 size={16} />
           </button>
           <button 
             onClick={() => onDelete(tool.id)}
             className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
-            title="Delete"
+            title="Excluir"
           >
             <Trash2 size={16} />
           </button>
@@ -80,7 +80,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onOpen, onEdit, onDele
           onClick={() => window.open(tool.url, '_blank')}
           className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
         >
-          New Tab <ExternalLink size={14} />
+          Nova Aba <ExternalLink size={14} />
         </button>
       </div>
     </div>

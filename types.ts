@@ -1,4 +1,4 @@
-export type Category = 'All' | 'Production' | 'Marketing' | 'Dev' | 'Design' | 'Finance';
+export type Category = 'Todas' | 'Produtividade' | 'Marketing' | 'Dev' | 'Design' | 'Finanças';
 
 export interface Tool {
   id: string;

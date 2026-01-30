@@ -16,7 +16,7 @@ function App() {
   });
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [activeTool, setActiveTool] = useState<Tool | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<Category>('All');
+  const [selectedCategory, setSelectedCategory] = useState<Category>('Todas');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTool, setEditingTool] = useState<Tool | null>(null);
@@ -58,7 +58,7 @@ function App() {
   };
 
   const handleDeleteTool = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this tool?')) {
+    if (window.confirm('Tem certeza que deseja excluir esta ferramenta?')) {
       setTools(tools.filter(t => t.id !== id));
     }
   };
@@ -81,14 +81,14 @@ function App() {
   // Filter Logic
   const filteredTools = useMemo(() => {
     return tools.filter(tool => {
-      const matchesCategory = selectedCategory === 'All' || tool.category === selectedCategory;
+      const matchesCategory = selectedCategory === 'Todas' || tool.category === selectedCategory;
       const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                             tool.url.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
   }, [tools, selectedCategory, searchQuery]);
 
-  const categories: Category[] = ['All', 'Production', 'Marketing', 'Dev', 'Design', 'Finance'];
+  const categories: Category[] = ['Todas', 'Produtividade', 'Marketing', 'Dev', 'Design', 'Finanças'];
 
   // View: Workspace
   if (viewMode === 'workspace' && activeTool) {
@@ -141,7 +141,7 @@ function App() {
                 <Search size={18} className="text-slate-400" />
                 <input 
                   type="text" 
-                  placeholder="Find tool..." 
+                  placeholder="Buscar..." 
                   className="bg-transparent border-none outline-none text-sm ml-2 w-32 text-slate-700 dark:text-slate-200 placeholder-slate-400"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -163,7 +163,7 @@ function App() {
               icon={<Plus size={18} />}
               className="shadow-xl shadow-indigo-500/20"
             >
-              Add Tool
+              Adicionar
             </Button>
           </div>
         </div>
@@ -173,7 +173,7 @@ function App() {
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input 
               type="text" 
-              placeholder="Search your tools..." 
+              placeholder="Pesquise suas ferramentas..." 
               className="w-full bg-white/50 dark:bg-slate-800/50 backdrop-blur px-10 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -200,9 +200,9 @@ function App() {
              <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
                 <Search size={40} className="text-slate-300 dark:text-slate-600" />
              </div>
-             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No tools found</h3>
+             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Nenhuma ferramenta encontrada</h3>
              <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-               We couldn't find any tools matching your criteria. Try adjusting your filters or add a new one.
+               Não encontramos ferramentas com seus critérios. Tente ajustar os filtros ou adicionar uma nova.
              </p>
           </div>
         )}
@@ -212,7 +212,7 @@ function App() {
       <Modal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)}
-        title={editingTool ? "Edit Tool" : "Add New Tool"}
+        title={editingTool ? "Editar Ferramenta" : "Nova Ferramenta"}
       >
         <AddToolForm 
           onAdd={handleAddTool} 
