@@ -15,7 +15,9 @@ function App() {
     const saved = localStorage.getItem('dashboard-tools');
     return saved ? JSON.parse(saved) : DEFAULT_TOOLS;
   });
-  const [activeTool, setActiveTool] = useState<Tool | null>(null);
+  
+  // Changed from activeTool (single) to activeTools (array)
+  const [activeTools, setActiveTools] = useState<Tool[]>([]);
   
   // Animation State
   const [isClosing, setIsClosing] = useState(false);
@@ -75,16 +77,17 @@ function App() {
 
   const handleOpenWorkspace = (tool: Tool) => {
     setIsClosing(false);
-    setActiveTool(tool);
+    // Opens a fresh workspace with just this tool
+    setActiveTools([tool]);
   };
 
   const handleCloseWorkspace = () => {
     setIsClosing(true);
     // Wait for animation to finish before removing from DOM
     setTimeout(() => {
-      setActiveTool(null);
+      setActiveTools([]);
       setIsClosing(false);
-    }, 200); // Shorter duration for snappier feel
+    }, 200); 
   };
 
   // Filter Logic
@@ -100,30 +103,30 @@ function App() {
   const categories: Category[] = ['Todas', 'Produtividade', 'Marketing', 'Dev', 'Design', 'Finanças'];
 
   return (
-    <div className="min-h-screen pb-20 px-4 md:px-8 max-w-[1600px] mx-auto relative">
+    <div className="min-h-screen pb-20 px-4 md:px-8 max-w-[1800px] mx-auto relative">
       
       {/* Floating Header */}
-      <header className="sticky top-6 z-40 mx-4 md:mx-6">
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-4 px-6 transition-all duration-300">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <header className="sticky top-6 z-40 mx-2 md:mx-4">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-3 md:p-4 px-4 md:px-6 transition-all duration-300">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
             {/* Logo */}
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
                 <LayoutGrid size={20} />
                 </div>
-                <span className="font-display font-bold text-2xl tracking-tight text-slate-900 dark:text-white">
+                <span className="font-display font-bold text-xl md:text-2xl tracking-tight text-slate-900 dark:text-white">
                 Dashboard<span className="text-primary">Hub</span>
                 </span>
             </div>
 
             {/* Center Navigation Pills - TOUR ID ADDED */}
             <nav id="tour-categories" className="flex items-center overflow-x-auto pb-2 md:pb-0 hide-scrollbar gap-2 transition-all duration-300">
-                <div className="flex p-1.5 bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+                <div className="flex p-1 bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
                 {categories.map((cat) => (
                     <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                    className={`px-3 md:px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
                         selectedCategory === cat
                         ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-md transform scale-105'
                         : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -136,14 +139,14 @@ function App() {
             </nav>
 
             {/* Right Actions - TOUR ID ADDED */}
-            <div id="tour-actions" className="flex items-center gap-3 transition-all duration-300">
+            <div id="tour-actions" className="flex items-center gap-2 md:gap-3 transition-all duration-300">
                 {/* Search Bar (Compact) */}
-                <div className="hidden lg:flex items-center bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-full border border-slate-200 dark:border-slate-700 focus-within:ring-2 focus-within:ring-primary transition-shadow">
+                <div className="hidden xl:flex items-center bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-full border border-slate-200 dark:border-slate-700 focus-within:ring-2 focus-within:ring-primary transition-shadow">
                     <Search size={18} className="text-slate-400" />
                     <input 
                     type="text" 
                     placeholder="Buscar..." 
-                    className="bg-transparent border-none outline-none text-sm ml-2 w-32 text-slate-700 dark:text-slate-200 placeholder-slate-400"
+                    className="bg-transparent border-none outline-none text-sm ml-2 w-24 2xl:w-32 text-slate-700 dark:text-slate-200 placeholder-slate-400"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -173,13 +176,13 @@ function App() {
                 icon={<Plus size={18} />}
                 className="shadow-xl shadow-primary/20"
                 >
-                Adicionar
+                <span className="hidden sm:inline">Adicionar</span>
                 </Button>
             </div>
             </div>
 
             {/* Mobile Search Bar (Below header on small screens) */}
-            <div className="mt-4 lg:hidden relative border-t border-slate-200 dark:border-slate-700 pt-4">
+            <div className="mt-4 xl:hidden relative border-t border-slate-200 dark:border-slate-700 pt-4">
             <Search size={18} className="absolute left-3 top-[1.65rem] -translate-y-1/2 text-slate-400" />
             <input 
                 type="text" 
@@ -193,7 +196,7 @@ function App() {
       </header>
 
       {/* Hero / Welcome Section */}
-      <section className="mt-16 md:mt-20 mb-12 flex flex-col items-center justify-center text-center px-4 animate-[fadeIn_0.5s_ease-out]">
+      <section className="mt-10 md:mt-16 mb-8 md:mb-12 flex flex-col items-center justify-center text-center px-4 animate-[fadeIn_0.5s_ease-out]">
         <h1 className="text-2xl md:text-4xl font-display font-medium text-slate-700 dark:text-slate-300 mb-2">
             Bem-vindo ao seu
         </h1>
@@ -209,7 +212,7 @@ function App() {
       {/* Grid Content - TOUR ID ADDED */}
       <main id="tour-grid" className="mt-6">
         {filteredTools.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5 md:gap-6">
             {filteredTools.map((tool) => (
               <ToolCard 
                 key={tool.id} 
@@ -247,7 +250,7 @@ function App() {
       </Modal>
 
       {/* EXPANDING WORKSPACE OVERLAY */}
-      {activeTool && (
+      {activeTools.length > 0 && (
         <div 
           className={`fixed inset-0 z-50 flex flex-col bg-slate-50 dark:bg-slate-900 shadow-2xl overflow-hidden ${
             isClosing 
@@ -255,12 +258,17 @@ function App() {
               : 'animate-[expandWorkspace_0.25s_ease-out_forwards]'
           }`}
         >
-          <Workspace tool={activeTool} onBack={handleCloseWorkspace} />
+          <Workspace 
+            activeTools={activeTools} 
+            allTools={tools}
+            onUpdateActiveTools={setActiveTools}
+            onBack={handleCloseWorkspace} 
+          />
         </div>
       )}
 
       {/* Assistente Rafaelzinho */}
-      {showGuide && !activeTool && !isModalOpen && (
+      {showGuide && activeTools.length === 0 && !isModalOpen && (
         <Rafaelzinho onClose={() => setShowGuide(false)} />
       )}
 
