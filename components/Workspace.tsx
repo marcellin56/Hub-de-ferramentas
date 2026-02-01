@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowLeft, ExternalLink, RefreshCw, AlertTriangle, Plus, X, Maximize2, Monitor } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, ExternalLink, RefreshCw, AlertTriangle, Plus, X, Monitor, Loader2 } from 'lucide-react';
 import { Tool } from '../types';
 import { Button } from './Button';
 
@@ -13,9 +13,22 @@ interface WorkspaceProps {
 export const Workspace: React.FC<WorkspaceProps> = ({ activeTools, allTools, onUpdateActiveTools, onBack }) => {
   const [showSelector, setShowSelector] = useState(false);
   const [selectorQuery, setSelectorQuery] = useState('');
+  
+  // Performance Optimization:
+  // We don't load iframes immediately. We wait for the entry animation (approx 300ms) to finish.
+  // This prevents the "jank" caused by heavy DOM painting during CSS transforms.
+  const [isReadyToLoad, setIsReadyToLoad] = useState(false);
 
   // Manage reloads independently
   const [reloadKeys, setReloadKeys] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    // Wait slightly longer than the CSS animation (0.25s)
+    const timer = setTimeout(() => {
+      setIsReadyToLoad(true);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, []);
 
   const reloadTool = (toolId: string) => {
     setReloadKeys(prev => ({ ...prev, [toolId]: (prev[toolId] || 0) + 1 }));
@@ -134,7 +147,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({ activeTools, allTools, onU
       {/* Grid Container */}
       <div className={`flex-1 grid gap-2 p-2 overflow-hidden ${getGridClasses(activeTools.length)}`}>
         {activeTools.map((tool) => (
-            <div key={tool.id} className="relative flex flex-col bg-white dark:bg-black rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 group">
+            <div key={tool.id} className="relative flex flex-col bg-white dark:bg-black rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 group transition-all duration-300">
                 
                 {/* Individual Tool Header */}
                 <div className="h-9 bg-slate-50 dark:bg-slate-800 flex items-center justify-between px-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
@@ -171,28 +184,38 @@ export const Workspace: React.FC<WorkspaceProps> = ({ activeTools, allTools, onU
                     </div>
                 </div>
 
-                {/* Iframe */}
-                <div className="flex-1 relative w-full h-full bg-white dark:bg-black">
-                    <iframe
-                    key={`${tool.id}-${reloadKeys[tool.id] || 0}`}
-                    src={tool.url}
-                    title={tool.name}
-                    className="w-full h-full border-none"
-                    sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
-                    />
-                    
-                    {/* Helper overlay for X-Frame-Options */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-0 pointer-events-none opacity-0 group-hover:opacity-60 transition-opacity">
-                        <div className="bg-slate-800/80 backdrop-blur text-white px-3 py-1.5 rounded-full text-[10px] flex items-center gap-1.5 whitespace-nowrap">
-                            <AlertTriangle size={10} className="text-yellow-400" />
-                            <span>Se branco, use o botão externo.</span>
+                {/* Iframe with Lazy Loading Strategy */}
+                <div className="flex-1 relative w-full h-full bg-slate-100 dark:bg-slate-900">
+                    {!isReadyToLoad ? (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 animate-pulse">
+                            <Loader2 size={32} className="animate-spin mb-2 text-primary" />
+                            <span className="text-sm font-medium">Carregando {tool.name}...</span>
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                            <iframe
+                                key={`${tool.id}-${reloadKeys[tool.id] || 0}`}
+                                src={tool.url}
+                                title={tool.name}
+                                className="w-full h-full border-none bg-white dark:bg-black"
+                                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
+                                loading="lazy"
+                            />
+                            
+                            {/* Helper overlay for X-Frame-Options */}
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-0 pointer-events-none opacity-0 group-hover:opacity-60 transition-opacity">
+                                <div className="bg-slate-800/80 backdrop-blur text-white px-3 py-1.5 rounded-full text-[10px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <AlertTriangle size={10} className="text-yellow-400" />
+                                    <span>Se branco, use o botão externo.</span>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         ))}
 
-        {/* Placeholder if 3 items to make grid look balanced (optional, usually empty space is fine but let's make it clear) */}
+        {/* Placeholder if 3 items to make grid look balanced */}
         {activeTools.length === 3 && (
             <div className="flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/50">
                 <button 
