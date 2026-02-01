@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ExternalLink, RefreshCw, AlertTriangle, Plus, X, Monitor, Loader2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, RefreshCw, AlertTriangle, Plus, X, Monitor, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import { Tool } from '../types';
 import { Button } from './Button';
 
@@ -14,16 +14,17 @@ export const Workspace: React.FC<WorkspaceProps> = ({ activeTools, allTools, onU
   const [showSelector, setShowSelector] = useState(false);
   const [selectorQuery, setSelectorQuery] = useState('');
   
+  // State for tracking which tool is maximized (if any)
+  const [maximizedToolId, setMaximizedToolId] = useState<string | null>(null);
+  
   // Performance Optimization:
   // We don't load iframes immediately. We wait for the entry animation (approx 300ms) to finish.
-  // This prevents the "jank" caused by heavy DOM painting during CSS transforms.
   const [isReadyToLoad, setIsReadyToLoad] = useState(false);
 
   // Manage reloads independently
   const [reloadKeys, setReloadKeys] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    // Wait slightly longer than the CSS animation (0.25s)
     const timer = setTimeout(() => {
       setIsReadyToLoad(true);
     }, 350);
@@ -44,11 +45,18 @@ export const Workspace: React.FC<WorkspaceProps> = ({ activeTools, allTools, onU
         alert("Esta ferramenta já está aberta.");
         return;
     }
+    // If adding a tool, we exit maximized mode to show the new layout
+    setMaximizedToolId(null);
     onUpdateActiveTools([...activeTools, tool]);
     setShowSelector(false);
   };
 
   const removeTool = (toolId: string) => {
+    // If we close the maximized tool, exit maximized mode
+    if (maximizedToolId === toolId) {
+        setMaximizedToolId(null);
+    }
+    
     const updated = activeTools.filter(t => t.id !== toolId);
     if (updated.length === 0) {
       onBack();
@@ -57,7 +65,20 @@ export const Workspace: React.FC<WorkspaceProps> = ({ activeTools, allTools, onU
     }
   };
 
-  const getGridClasses = (count: number) => {
+  const toggleMaximize = (toolId: string) => {
+    if (maximizedToolId === toolId) {
+        setMaximizedToolId(null); // Restore split view
+    } else {
+        setMaximizedToolId(toolId); // Maximize this tool
+    }
+  };
+
+  const getGridClasses = () => {
+    // If a tool is maximized, force full width/height
+    if (maximizedToolId) return 'grid-cols-1 grid-rows-1';
+
+    // Standard Layouts
+    const count = activeTools.length;
     switch(count) {
         case 1: return 'grid-cols-1 grid-rows-1';
         case 2: return 'grid-cols-2 grid-rows-1';
@@ -145,78 +166,97 @@ export const Workspace: React.FC<WorkspaceProps> = ({ activeTools, allTools, onU
       </header>
 
       {/* Grid Container */}
-      <div className={`flex-1 grid gap-2 p-2 overflow-hidden ${getGridClasses(activeTools.length)}`}>
-        {activeTools.map((tool) => (
-            <div key={tool.id} className="relative flex flex-col bg-white dark:bg-black rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 group transition-all duration-300">
-                
-                {/* Individual Tool Header */}
-                <div className="h-9 bg-slate-50 dark:bg-slate-800 flex items-center justify-between px-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
-                    <div className="flex items-center gap-2 overflow-hidden">
-                        <div className="w-5 h-5 rounded bg-white dark:bg-slate-700 flex items-center justify-center text-xs shrink-0 shadow-sm">
-                            {tool.icon.startsWith('http') ? <img src={tool.icon} className="w-3 h-3" /> : tool.icon}
-                        </div>
-                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
-                            {tool.name}
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                         <button 
-                            onClick={() => reloadTool(tool.id)}
-                            className="p-1 hover:bg-slate-200 dark:hover:bg-slate-600 rounded text-slate-500"
-                            title="Recarregar"
-                         >
-                            <RefreshCw size={12} />
-                         </button>
-                         <button 
-                            onClick={() => window.open(tool.url, '_blank')}
-                            className="p-1 hover:bg-slate-200 dark:hover:bg-slate-600 rounded text-slate-500"
-                            title="Abrir em nova aba"
-                         >
-                            <ExternalLink size={12} />
-                         </button>
-                         <button 
-                            onClick={() => removeTool(tool.id)}
-                            className="p-1 hover:bg-red-100 dark:hover:bg-red-900/50 hover:text-red-600 rounded text-slate-400 ml-1"
-                            title="Fechar Janela"
-                         >
-                            <X size={12} />
-                         </button>
-                    </div>
-                </div>
+      <div className={`flex-1 grid gap-2 p-2 overflow-hidden ${getGridClasses()}`}>
+        {activeTools.map((tool) => {
+            const isHidden = maximizedToolId && maximizedToolId !== tool.id;
+            const isMaximized = maximizedToolId === tool.id;
 
-                {/* Iframe with Lazy Loading Strategy */}
-                <div className="flex-1 relative w-full h-full bg-slate-100 dark:bg-slate-900">
-                    {!isReadyToLoad ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 animate-pulse">
-                            <Loader2 size={32} className="animate-spin mb-2 text-primary" />
-                            <span className="text-sm font-medium">Carregando {tool.name}...</span>
-                        </div>
-                    ) : (
-                        <>
-                            <iframe
-                                key={`${tool.id}-${reloadKeys[tool.id] || 0}`}
-                                src={tool.url}
-                                title={tool.name}
-                                className="w-full h-full border-none bg-white dark:bg-black"
-                                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
-                                loading="lazy"
-                            />
-                            
-                            {/* Helper overlay for X-Frame-Options */}
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-0 pointer-events-none opacity-0 group-hover:opacity-60 transition-opacity">
-                                <div className="bg-slate-800/80 backdrop-blur text-white px-3 py-1.5 rounded-full text-[10px] flex items-center gap-1.5 whitespace-nowrap">
-                                    <AlertTriangle size={10} className="text-yellow-400" />
-                                    <span>Se branco, use o botão externo.</span>
-                                </div>
+            return (
+                <div 
+                    key={tool.id} 
+                    className={`relative flex flex-col bg-white dark:bg-black rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 group transition-all duration-300 ${isHidden ? 'hidden' : 'flex'}`}
+                >
+                    
+                    {/* Individual Tool Header */}
+                    <div className="h-9 bg-slate-50 dark:bg-slate-800 flex items-center justify-between px-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
+                        <div className="flex items-center gap-2 overflow-hidden">
+                            <div className="w-5 h-5 rounded bg-white dark:bg-slate-700 flex items-center justify-center text-xs shrink-0 shadow-sm">
+                                {tool.icon.startsWith('http') ? <img src={tool.icon} className="w-3 h-3" /> : tool.icon}
                             </div>
-                        </>
-                    )}
-                </div>
-            </div>
-        ))}
+                            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
+                                {tool.name}
+                            </span>
+                        </div>
+                        
+                        {/* Always visible actions on hover */}
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {/* Maximize/Minimize Button */}
+                            <button 
+                                onClick={() => toggleMaximize(tool.id)}
+                                className={`p-1 hover:bg-slate-200 dark:hover:bg-slate-600 rounded ${isMaximized ? 'text-primary' : 'text-slate-500'}`}
+                                title={isMaximized ? "Restaurar tamanho" : "Maximizar"}
+                            >
+                                {isMaximized ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                            </button>
 
-        {/* Placeholder if 3 items to make grid look balanced */}
-        {activeTools.length === 3 && (
+                            <button 
+                                onClick={() => reloadTool(tool.id)}
+                                className="p-1 hover:bg-slate-200 dark:hover:bg-slate-600 rounded text-slate-500"
+                                title="Recarregar"
+                            >
+                                <RefreshCw size={12} />
+                            </button>
+                            <button 
+                                onClick={() => window.open(tool.url, '_blank')}
+                                className="p-1 hover:bg-slate-200 dark:hover:bg-slate-600 rounded text-slate-500"
+                                title="Abrir em nova aba"
+                            >
+                                <ExternalLink size={12} />
+                            </button>
+                            <button 
+                                onClick={() => removeTool(tool.id)}
+                                className="p-1 hover:bg-red-100 dark:hover:bg-red-900/50 hover:text-red-600 rounded text-slate-400 ml-1"
+                                title="Fechar Janela"
+                            >
+                                <X size={12} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Iframe with Lazy Loading Strategy */}
+                    <div className="flex-1 relative w-full h-full bg-slate-100 dark:bg-slate-900">
+                        {!isReadyToLoad ? (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 animate-pulse">
+                                <Loader2 size={32} className="animate-spin mb-2 text-primary" />
+                                <span className="text-sm font-medium">Carregando {tool.name}...</span>
+                            </div>
+                        ) : (
+                            <>
+                                <iframe
+                                    key={`${tool.id}-${reloadKeys[tool.id] || 0}`}
+                                    src={tool.url}
+                                    title={tool.name}
+                                    className="w-full h-full border-none bg-white dark:bg-black"
+                                    sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
+                                    loading="lazy"
+                                />
+                                
+                                {/* Helper overlay for X-Frame-Options */}
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-0 pointer-events-none opacity-0 group-hover:opacity-60 transition-opacity">
+                                    <div className="bg-slate-800/80 backdrop-blur text-white px-3 py-1.5 rounded-full text-[10px] flex items-center gap-1.5 whitespace-nowrap">
+                                        <AlertTriangle size={10} className="text-yellow-400" />
+                                        <span>Se branco, use o botão externo.</span>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            );
+        })}
+
+        {/* Placeholder - Only show if NO tool is maximized and we have 3 tools */}
+        {!maximizedToolId && activeTools.length === 3 && (
             <div className="flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/50">
                 <button 
                     onClick={() => setShowSelector(true)}

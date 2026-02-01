@@ -10,6 +10,8 @@ const IMAGES = {
   crossed: 'https://i.imgur.com/rA6rjPV.png',
   pointRight: 'https://i.imgur.com/05HGJe7.png',
   pointUp: 'https://i.imgur.com/XJPfZTC.png',
+  waist: 'https://i.imgur.com/1stcsXz.png', // Mãos na cintura
+  heart: 'https://i.imgur.com/QkSJibW.png', // Coraçãozinho
 };
 
 interface HighlightStyle {
@@ -52,13 +54,18 @@ export const Rafaelzinho: React.FC<RafaelzinhoProps> = ({ onClose }) => {
       targetId: 'tour-actions'
     },
     {
-      text: "Seus cards são expansíveis! Clique para abrir o site sem sair da tela. Experimente depois!",
+      text: "Ao clicar em um card, você abre o Workspace. Lá você pode adicionar até 4 ferramentas na mesma tela!",
       pose: IMAGES.pointRight,
       targetId: 'tour-grid'
     },
     {
-      text: "Prontinho! Agora o comando é seu. Bom trabalho!",
-      pose: IMAGES.crossed,
+      text: "Dica de Mestre: Dentro do Workspace, use o botão de expandir no canto da janela para focar totalmente em uma tarefa.",
+      pose: IMAGES.waist,
+      targetId: 'tour-grid'
+    },
+    {
+      text: "Prontinho! Tudo configurado com muito carinho. Bom trabalho!",
+      pose: IMAGES.heart,
       targetId: null
     }
   ];
